@@ -4,8 +4,9 @@ from fastai.vision.all import *
 
 import streamlit as st
 
+st.subheader('Image Classification with Fastai')
 class Predict:
-    def __init__(self, filename):
+    def __init__(self):
         self.learn_inference = load_learner('./cats.pkl')
         self.img = self.get_image_from_upload()
         if self.img is not None:
@@ -31,7 +32,5 @@ class Predict:
             st.write(f'Click the button to classify') 
 
 if __name__=='__main__':
-
-    file_name='dog.pkl'
-
-    predictor = Predict(file_name)
+    # file_name='dog.pkl'
+    predictor = Predict()
