@@ -3,6 +3,9 @@ from fastai.vision.all import *
 
 
 import streamlit as st
+import pathlib
+plt = platform.system()
+if plt == 'Windows': pathlib.PosixPath = pathlib.WindowsPath
 
 st.subheader('Image Classification with Fastai')
 class Predict:
@@ -32,5 +35,4 @@ class Predict:
             st.write(f'Click the button to classify') 
 
 if __name__=='__main__':
-    # file_name='dog.pkl'
-    predictor = Predict()
+     Predict()
