@@ -5,7 +5,7 @@ from fastai.vision.all import *
 import streamlit as st
 import pathlib
 plt = platform.system()
-if plt == 'Windows': pathlib.PosixPath = pathlib.WindowsPath
+if plt == 'Linux': pathlib.WindowsPath = pathlib.PosixPath
 
 st.subheader('Image Classification with Fastai')
 class Predict:
