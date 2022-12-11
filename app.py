@@ -1,7 +1,7 @@
 from fastai.vision.widgets import *
 from fastai.vision.all import *
 from fastbook import *
-from keras.models import load_model
+# from keras.models import load_model
 from PIL import Image, ImageOps
 import numpy as np
 from io import BytesIO, StringIO
@@ -23,7 +23,7 @@ def navigation():
     with st.sidebar:
         selected = option_menu(
             menu_title= "Big Data",
-            options = ["Classifier", "EDA", "Training", "Google Teachable Machine"],
+            options = ["Classifier", "EDA"],
             icons=['upload', 'graph-down'],
             menu_icon="cast", default_index=0
         )
@@ -37,8 +37,8 @@ def navigation():
     # if selected == "Training":
     #     training()
     
-    if selected == "Google Teachable Machine":
-        googlemachine()
+    # if selected == "Google Teachable Machine":
+    #     googlemachine()
 
 
 def main_app():
@@ -142,58 +142,58 @@ def eda():
 #     resnet_adv = vision_learner(dls, resnet34, metrics=error_rate)
 #     resnet_adv.fit_one_cycle(3, 3e-3)
 
-def googlemachine():
-    # Disable scientific notation for clarity
-    np.set_printoptions(suppress=True)
+#def googlemachine():
+    # # Disable scientific notation for clarity
+    # np.set_printoptions(suppress=True)
 
-    # Load the model
-    model = load_model('keras_Model.h5', compile=False)
+    # # Load the model
+    # model = load_model('keras_Model.h5', compile=False)
 
-    # Load the labels
-    class_names = open('labels.txt', 'r').readlines()
+    # # Load the labels
+    # class_names = open('labels.txt', 'r').readlines()
 
-    data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
+    # data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 
-    google_file = st.file_uploader("Upload Files",type=['png','jpeg', 'jpg'])
-    col1,col2 = st.columns(2)
-    with col1:
-        display_image = st.empty()
-        if not google_file:
-            return  display_image.info("Choose a file to upload, only type: png, jpg, jpeg ")
-        #return None
-        else:
-            google_file = PILImage.create((uploaded_file))
-            display_image.image(google_file.to_thumb(500,500), caption='Image Upload')
+    # google_file = st.file_uploader("Upload Files",type=['png','jpeg', 'jpg'])
+    # col1,col2 = st.columns(2)
+    # with col1:
+    #     display_image = st.empty()
+    #     if not google_file:
+    #         return  display_image.info("Choose a file to upload, only type: png, jpg, jpeg ")
+    #     #return None
+    #     else:
+    #         google_file = PILImage.create((uploaded_file))
+    #         display_image.image(google_file.to_thumb(500,500), caption='Image Upload')
 
-        #pred, pred_idx, probs = res_model.predict(google_file)
-    with col2:
-        # Replace this with the path to your image
-        image = Image.open(google_file).convert('RGB')
+    #     #pred, pred_idx, probs = res_model.predict(google_file)
+    # with col2:
+    #     # Replace this with the path to your image
+    #     image = Image.open(google_file).convert('RGB')
         
-        #resize the image to a 224x224
-        size = (224, 224)
-        image = ImageOps.fit(image, size, Image.Resampling.LANCZOS)
+    #     #resize the image to a 224x224
+    #     size = (224, 224)
+    #     image = ImageOps.fit(image, size, Image.Resampling.LANCZOS)
 
-        #turn the image into a numpy array
-        image_array = np.asarray(image)
+    #     #turn the image into a numpy array
+    #     image_array = np.asarray(image)
 
-        # Normalize the image
-        normalized_image_array = (image_array.astype(np.float32) / 127.0) - 1
+    #     # Normalize the image
+    #     normalized_image_array = (image_array.astype(np.float32) / 127.0) - 1
 
-        # Load the image into the array
-        data[0] = normalized_image_array
+    #     # Load the image into the array
+    #     data[0] = normalized_image_array
 
-        # run the inference
-        prediction = model.predict(data)
-        index = np.argmax(prediction)
-        class_name = class_names[index]
-        confidence_score = prediction[0][index]
+    #     # run the inference
+    #     prediction = model.predict(data)
+    #     index = np.argmax(prediction)
+    #     class_name = class_names[index]
+    #     confidence_score = prediction[0][index]
 
-        st.success(f'Prediction: {class_name} ')
-        st.info(f'Probability: {confidence_score}')
+    #     st.success(f'Prediction: {class_name} ')
+    #     st.info(f'Probability: {confidence_score}')
     
     
-    uploaded_file.close()
+    # uploaded_file.close()
 
 
 if __name__=='__main__':
