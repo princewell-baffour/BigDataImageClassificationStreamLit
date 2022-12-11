@@ -23,7 +23,7 @@ def navigation():
     with st.sidebar:
         selected = option_menu(
             menu_title= "Big Data",
-            options = ["Classifier", "EDA", "Training"],
+            options = ["Classifier", "EDA", "Training", "Google Teachable Machine"],
             icons=['upload', 'graph-down'],
             menu_icon="cast", default_index=0
         )
@@ -36,6 +36,9 @@ def navigation():
 
     if selected == "Training":
         training()
+    
+    if selected == "Google Teachable Machine":
+        googlemachine()
 
 
 def main_app():
