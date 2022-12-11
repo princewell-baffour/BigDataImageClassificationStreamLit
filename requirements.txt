@@ -2,4 +2,4 @@ fastbook
 streamlit
 streamlit_option_menu
 pillow
-tensorflow
+Keras
