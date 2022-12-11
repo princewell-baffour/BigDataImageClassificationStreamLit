@@ -34,8 +34,8 @@ def navigation():
     if selected == "EDA":
         eda()
 
-    if selected == "Training":
-        training()
+    # if selected == "Training":
+    #     training()
     
     if selected == "Google Teachable Machine":
         googlemachine()
@@ -120,27 +120,27 @@ def eda():
                                 30)
             st.image(images[:to_show], width=200)
 
-def training():
+# def training():
     
-    fns = get_image_files('./cats')
+#     fns = get_image_files('./cats')
 
-    cats = DataBlock(
-        blocks=(ImageBlock, CategoryBlock), 
-        get_items=get_image_files, 
-        splitter=RandomSplitter(valid_pct=0.2, seed=1),
-        get_y=parent_label,
-        item_tfms=Resize(128))
+#     cats = DataBlock(
+#         blocks=(ImageBlock, CategoryBlock), 
+#         get_items=get_image_files, 
+#         splitter=RandomSplitter(valid_pct=0.2, seed=1),
+#         get_y=parent_label,
+#         item_tfms=Resize(128))
         
-    dls = cats.dataloaders('./cats/')
+#     dls = cats.dataloaders('./cats/')
 
-    cats = cats.new(
-        item_tfms=RandomResizedCrop(224, min_scale=0.5),
-        batch_tfms=aug_transforms())
+#     cats = cats.new(
+#         item_tfms=RandomResizedCrop(224, min_scale=0.5),
+#         batch_tfms=aug_transforms())
 
-    dls = cats.dataloaders('./cats/')
+#     dls = cats.dataloaders('./cats/')
 
-    resnet_adv = vision_learner(dls, resnet34, metrics=error_rate)
-    resnet_adv.fit_one_cycle(3, 3e-3)
+#     resnet_adv = vision_learner(dls, resnet34, metrics=error_rate)
+#     resnet_adv.fit_one_cycle(3, 3e-3)
 
 def googlemachine():
     # Disable scientific notation for clarity
