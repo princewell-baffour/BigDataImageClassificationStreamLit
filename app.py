@@ -11,6 +11,9 @@ import pathlib
 plt = platform.system()
 if plt == 'Linux': pathlib.WindowsPath = pathlib.PosixPath
 
+import requests
+from io import BytesIO
+
 st.set_page_config(
     page_title="Image Classification",
     page_icon="🧊",
@@ -23,7 +26,7 @@ def navigation():
     with st.sidebar:
         selected = option_menu(
             menu_title= "Big Data",
-            options = ["Classifier", "EDA", "Google Teachable Machine"],
+            options = ["Classifier", "EDA", "Google Teachable Machine","New Image Trainer"],
             icons=['upload', 'graph-down'],
             menu_icon="cast", default_index=0
         )
@@ -35,10 +38,13 @@ def navigation():
         eda()
 
     # if selected == "Training":
-    #     training()
+    #     training() 
     
     if selected == "Google Teachable Machine":
         googlemachine()
+
+    if selected == "New Image Trainer":
+        fastai_training()
 
 
 def main_app():
@@ -195,6 +201,57 @@ def googlemachine():
     
     google_file.close()
 
+def fastai_training():
+    st.header('New Image Classifier Model')
+    st.subheader('Powered by FastAi')
+
+    fns = get_image_files('cats/')
+    
+    cats = DataBlock(
+        blocks=(ImageBlock, CategoryBlock), 
+        get_items=get_image_files, 
+        splitter=RandomSplitter(valid_pct=0.2, seed=1),
+        get_y=parent_label,
+        item_tfms=Resize(128))
+    
+    dls = cats.dataloaders('./cats/')
+
+    # image_file = dls.valid.show_batch(max_n=4, nrows=1)
+    # img = Image.open(BytesIO(image_file.content))
+    # st.write('Four random images from the DataLoaders')
+    # image = Image.open(img)
+
+    # st.image(image, caption='Four random images')
+
+    # Random Resize and Augmentation
+    cats = cats.new(
+    item_tfms=RandomResizedCrop(224, min_scale=0.5),
+    batch_tfms=aug_transforms())
+    dls = cats.dataloaders('./cats/')
+
+    col1, col2 = st.columns(2)
+    col11, col12 = st.columns(2)
+    cnn_arch = col1.selectbox('Select CNN Architecture', options=['resnet50','resnet34'], index = 0)
+    no_epoch = col2.slider('What is your desired number of epochs', min_value=1, max_value=50, value=3, step=1)
+    learning_rate = col11.slider('What is your desired learning rate (Value divided by 1000)', min_value= 1, max_value=100, value=30, step=10)/11000
+
+    st.info(f'Calculated learning rate: {learning_rate}')
+    
+    
+    if st.button('Train Model'):
+        resnet_adv = vision_learner(dls, cnn_arch, metrics=error_rate)
+        resnet_adv.fit_one_cycle(no_epoch, learning_rate)
+
+        resnet_adv.unfreeze()
+        resnet_adv.fit_one_cycle(1, 1e-5)
+
+        resnet_adv.export('cats.pkl')
+        with open('cats.pkl', 'rb') as f:
+            st.download_button('Download Model', f, file_name='cats.pkl')  # Defaults to 'application/octet-stream'
+
+    else:
+        st.write('Click on button to start training')
+    
 
 if __name__=='__main__':
     navigation()
