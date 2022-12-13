@@ -26,7 +26,7 @@ def navigation():
     with st.sidebar:
         selected = option_menu(
             menu_title= "Big Data",
-            options = ["Classifier", "EDA", "Google Teachable Machine","New Image Trainer"],
+            options = ["Classifier", "EDA", "Google Teachable Machine"],
             icons=['upload', 'graph-down'],
             menu_icon="cast", default_index=0
         )
