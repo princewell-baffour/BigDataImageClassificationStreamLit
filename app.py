@@ -37,21 +37,17 @@ def navigation():
     if selected == "EDA":
         eda()
 
-    # if selected == "Training":
-    #     training() 
-    
     if selected == "Google Teachable Machine":
         googlemachine()
 
-    if selected == "New Image Trainer":
-        fastai_training()
+    # if selected == "New Image Trainer":
+    #     fastai_training()
 
 
 def main_app():
     st.header('Image Classification')
     st.subheader('Model trained with Fastai')
 
-    
     plt = platform.system()
     if plt == 'Windows': pathlib.PosixPath = pathlib.WindowsPath
     res_model = load_learner(pathlib.Path()/'cats.pkl')
@@ -126,28 +122,6 @@ def eda():
                                 30)
             st.image(images[:to_show], width=200)
 
-# def training():
-    
-#     fns = get_image_files('./cats')
-
-#     cats = DataBlock(
-#         blocks=(ImageBlock, CategoryBlock), 
-#         get_items=get_image_files, 
-#         splitter=RandomSplitter(valid_pct=0.2, seed=1),
-#         get_y=parent_label,
-#         item_tfms=Resize(128))
-        
-#     dls = cats.dataloaders('./cats/')
-
-#     cats = cats.new(
-#         item_tfms=RandomResizedCrop(224, min_scale=0.5),
-#         batch_tfms=aug_transforms())
-
-#     dls = cats.dataloaders('./cats/')
-
-#     resnet_adv = vision_learner(dls, resnet34, metrics=error_rate)
-#     resnet_adv.fit_one_cycle(3, 3e-3)
-
 def googlemachine():
     # Disable scientific notation for clarity
     np.set_printoptions(suppress=True)
@@ -201,56 +175,49 @@ def googlemachine():
     
     google_file.close()
 
-def fastai_training():
-    st.header('New Image Classifier Model')
-    st.subheader('Powered by FastAi')
+# def fastai_training():
+#     st.header('New Image Classifier Model')
+#     st.subheader('Powered by FastAi')
 
-    fns = get_image_files('cats/')
+#     fns = get_image_files('cats/')
     
-    cats = DataBlock(
-        blocks=(ImageBlock, CategoryBlock), 
-        get_items=get_image_files, 
-        splitter=RandomSplitter(valid_pct=0.2, seed=1),
-        get_y=parent_label,
-        item_tfms=Resize(128))
+#     cats = DataBlock(
+#         blocks=(ImageBlock, CategoryBlock), 
+#         get_items=get_image_files, 
+#         splitter=RandomSplitter(valid_pct=0.2, seed=1),
+#         get_y=parent_label,
+#         item_tfms=Resize(128))
     
-    dls = cats.dataloaders('./cats/')
+#     dls = cats.dataloaders('./cats/')
 
-    # image_file = dls.valid.show_batch(max_n=4, nrows=1)
-    # img = Image.open(BytesIO(image_file.content))
-    # st.write('Four random images from the DataLoaders')
-    # image = Image.open(img)
+#     # Random Resize and Augmentation
+#     cats = cats.new(
+#     item_tfms=RandomResizedCrop(224, min_scale=0.5),
+#     batch_tfms=aug_transforms())
+#     dls = cats.dataloaders('./cats/')
 
-    # st.image(image, caption='Four random images')
+#     col1, col2 = st.columns(2)
+#     col11, col12 = st.columns(2)
+#     cnn_arch = col1.selectbox('Select CNN Architecture', options=['resnet50','resnet34'], index = 0)
+#     no_epoch = col2.slider('What is your desired number of epochs', min_value=1, max_value=50, value=3, step=1)
+#     learning_rate = col11.slider('What is your desired learning rate (Value divided by 1000)', min_value= 1, max_value=100, value=30, step=10)/1000
 
-    # Random Resize and Augmentation
-    cats = cats.new(
-    item_tfms=RandomResizedCrop(224, min_scale=0.5),
-    batch_tfms=aug_transforms())
-    dls = cats.dataloaders('./cats/')
-
-    col1, col2 = st.columns(2)
-    col11, col12 = st.columns(2)
-    cnn_arch = col1.selectbox('Select CNN Architecture', options=['resnet50','resnet34'], index = 0)
-    no_epoch = col2.slider('What is your desired number of epochs', min_value=1, max_value=50, value=3, step=1)
-    learning_rate = col11.slider('What is your desired learning rate (Value divided by 1000)', min_value= 1, max_value=100, value=30, step=10)/11000
-
-    st.info(f'Calculated learning rate: {learning_rate}')
+#     st.info(f'Calculated learning rate: {learning_rate}')
     
     
-    if st.button('Train Model'):
-        resnet_adv = vision_learner(dls, cnn_arch, metrics=error_rate)
-        resnet_adv.fit_one_cycle(no_epoch, learning_rate)
+#     if st.button('Train Model'):
+#         resnet_adv = vision_learner(dls, cnn_arch, metrics=error_rate)
+#         resnet_adv.fit_one_cycle(no_epoch, learning_rate)
 
-        resnet_adv.unfreeze()
-        resnet_adv.fit_one_cycle(1, 1e-5)
+#         resnet_adv.unfreeze()
+#         resnet_adv.fit_one_cycle(1, 1e-5)
 
-        resnet_adv.export('cats.pkl')
-        with open('cats.pkl', 'rb') as f:
-            st.download_button('Download Model', f, file_name='cats.pkl')  # Defaults to 'application/octet-stream'
+#         resnet_adv.export('cats.pkl')
+#         with open('cats.pkl', 'rb') as f:
+#             st.download_button('Download Model', f, file_name='cats.pkl')  # Defaults to 'application/octet-stream'
 
-    else:
-        st.write('Click on button to start training')
+#     else:
+#         st.write('Click on button to start training')
     
 
 if __name__=='__main__':
