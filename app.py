@@ -26,7 +26,7 @@ def navigation():
     with st.sidebar:
         selected = option_menu(
             menu_title= "Big Data",
-            options = ["Classifier", "EDA", "Google Teachable Machine"],
+            options = ["Classifier", "EDA", "Google Teachable Machine", "New Image Trainer"],
             icons=['upload', 'graph-down'],
             menu_icon="cast", default_index=0
         )
@@ -40,8 +40,8 @@ def navigation():
     if selected == "Google Teachable Machine":
         googlemachine()
 
-    # if selected == "New Image Trainer":
-    #     fastai_training()
+    if selected == "New Image Trainer":
+        fastai_training()
 
 
 def main_app():
@@ -175,49 +175,58 @@ def googlemachine():
     
     google_file.close()
 
-# def fastai_training():
-#     st.header('New Image Classifier Model')
-#     st.subheader('Powered by FastAi')
+def pickle_model(model):
+    """Pickle the model inside bytes. In our case, it is the "same" as 
+    storing a file, but in RAM.
+    """
+    f = io.BytesIO()
+    pickle.dump(model, f)
+    return f
 
-#     fns = get_image_files('cats/')
+def fastai_training():
+    st.header('New Image Classifier Model')
+    st.subheader('Powered by FastAi')
+
+    fns = get_image_files('cats/')
     
-#     cats = DataBlock(
-#         blocks=(ImageBlock, CategoryBlock), 
-#         get_items=get_image_files, 
-#         splitter=RandomSplitter(valid_pct=0.2, seed=1),
-#         get_y=parent_label,
-#         item_tfms=Resize(128))
+    cats = DataBlock(
+        blocks=(ImageBlock, CategoryBlock), 
+        get_items=get_image_files, 
+        splitter=RandomSplitter(valid_pct=0.2, seed=1),
+        get_y=parent_label,
+        item_tfms=Resize(128))
     
-#     dls = cats.dataloaders('./cats/')
+    dls = cats.dataloaders('./cats/')
 
-#     # Random Resize and Augmentation
-#     cats = cats.new(
-#     item_tfms=RandomResizedCrop(224, min_scale=0.5),
-#     batch_tfms=aug_transforms())
-#     dls = cats.dataloaders('./cats/')
+    # Random Resize and Augmentation
+    cats = cats.new(
+    item_tfms=RandomResizedCrop(224, min_scale=0.5),
+    batch_tfms=aug_transforms())
+    dls = cats.dataloaders('./cats/')
 
-#     col1, col2 = st.columns(2)
-#     col11, col12 = st.columns(2)
-#     cnn_arch = col1.selectbox('Select CNN Architecture', options=['resnet50','resnet34'], index = 0)
-#     no_epoch = col2.slider('What is your desired number of epochs', min_value=1, max_value=50, value=3, step=1)
-#     learning_rate = col11.slider('What is your desired learning rate (Value divided by 1000)', min_value= 1, max_value=100, value=30, step=10)/1000
+    col1, col2 = st.columns(2)
+    col11, col12 = st.columns(2)
+    cnn_arch = col1.selectbox('Select CNN Architecture', options=['resnet50','resnet34'], index = 0)
+    no_epoch = col2.slider('What is your desired number of epochs', min_value=1, max_value=50, value=3, step=1)
+    learning_rate = col11.slider('What is your desired learning rate (Value divided by 1000)', min_value= 1, max_value=100, value=30, step=10)/1000
 
-#     st.info(f'Calculated learning rate: {learning_rate}')
+    st.info(f'Calculated learning rate: {learning_rate}')
     
+
     
-#     if st.button('Train Model'):
-#         resnet_adv = vision_learner(dls, cnn_arch, metrics=error_rate)
-#         resnet_adv.fit_one_cycle(no_epoch, learning_rate)
+    if st.button('Train Model'):
+        resnet_adv = vision_learner(dls, cnn_arch, metrics=error_rate)
+        resnet_adv.fit_one_cycle(no_epoch, learning_rate)
 
-#         resnet_adv.unfreeze()
-#         resnet_adv.fit_one_cycle(1, 1e-5)
+        resnet_adv.unfreeze()
+        resnet_adv.fit_one_cycle(1, 1e-5)
 
-#         resnet_adv.export('cats.pkl')
-#         with open('cats.pkl', 'rb') as f:
-#             st.download_button('Download Model', f, file_name='cats.pkl')  # Defaults to 'application/octet-stream'
+        catspkl = pickle_model(resnet_adv)
+        with open('cats.pkl', 'rb') as f:
+            st.download_button('Download Model', catspkl, file_name='cats.pkl')  # Defaults to 'application/octet-stream'
 
-#     else:
-#         st.write('Click on button to start training')
+    else:
+        st.write('Click on button to start training')
     
 
 if __name__=='__main__':
